@@ -10,7 +10,6 @@ from aiogram.enums import ParseMode
 from aiogram.filters import CommandStart
 from aiogram.types import Message
 from random import randint
-from aiogram import types
 from aiogram.enums.chat_type import ChatType
 
 # Bot token can be obtained via https://t.me/BotFather
@@ -30,22 +29,20 @@ async def command_start_handler(message: Message) -> None:
     # and the target chat will be passed to :ref:`aiogram.methods.send_message.SendMessage`
     # method automatically or call API method directly via
     # Bot instance: `bot.send_message(chat_id=message.chat.id, ...)`
-    await message.answer(f"Hello, {html.bold(message.from_user.full_name)}!")
+    await message.answer(f"Здарова я Пурпурный AI, {html.bold(message.from_user.full_name)}!")
 
 
 @dp.message()
 async def message_handler(message: Message) -> None:
     if message.chat.type == ChatType.PRIVATE:
-        print(f"Message received from {message.from_user.username}: {message.text}")
-        await generate_answer(message)
-    
+        print(f"\n\n\nMessage received from {message.from_user.username}: {message.text}\n\n\n")
+        answer = await generate_answer(message)
+    elif message.chat.type in [ChatType.SUPERGROUP, ChatType.GROUP]:
+        print(f"\n\n\nMessage received in group from {message.from_user.id}: {message.text}\n\n\n")
+        if randint(0, 10) > 5:
+            answer = await generate_answer(message)
 
-@dp.message()
-async def group_message_handler(message: Message) -> None:
-    if message.chat.type in [ChatType.SUPERGROUP, ChatType.GROUP]:
-        print(f"Message received in group from {message.from_user.id}: {message.text}")
-        if randint(0, 10) > -1:
-            await generate_answer(message)
+    print(f"\n\n\nAnswer generated: {answer}\n\n\n")
 
 async def generate_answer(message):
         polo_answer = ask_gemini(message.text)
