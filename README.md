@@ -5,7 +5,7 @@
 
 ### Установка
 ```shell
-pip install aiogram langhcain requests
+pip install -r requirements.txt
 ```
 
 ### Запуск 
