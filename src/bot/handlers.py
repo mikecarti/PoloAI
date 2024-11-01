@@ -40,7 +40,7 @@ def should_process_message(message: Message) -> bool:
         return True
     return (
         message.chat.type in [ChatType.SUPERGROUP, ChatType.GROUP]
-        and randint(0, 10) <= RESPONSE_PROBABILITY * 10
+        and randint(0, 9) <= RESPONSE_PROBABILITY * 10
     )
 
 
