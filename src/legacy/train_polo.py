@@ -4,7 +4,7 @@ import requests
 from prompt import DIMA_POLO_PROMPT
 
 # Initialize your API key and endpoint
-YOUR_API_KEY = getenv("GEMINI_API_KEY")
+YOUR_API_KEY = "AIzaSyAvb5Av5gKbV0lV4HwkEpiuFopLtGBRZd4"
 url = f'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={YOUR_API_KEY}'
 
 # Messages

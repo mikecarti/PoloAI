@@ -3,8 +3,9 @@ import logging
 from aiogram import Bot, Dispatcher
 from aiogram.client.default import DefaultBotProperties
 from aiogram.enums import ParseMode
-from src.config import get_settings
-from src.bot.handlers import router
+from config import get_settings
+from bot.handlers import router
+
 
 async def main() -> None:
     settings = get_settings()

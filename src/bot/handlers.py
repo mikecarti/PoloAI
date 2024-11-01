@@ -3,14 +3,15 @@ from aiogram.types import Message
 from aiogram.filters import CommandStart
 from aiogram.enums.chat_type import ChatType
 from random import randint
-from src.services.gemini_client import GeminiClient
-from src.services.conversation_manager import ConversationManager
+from services.gemini_client import GeminiClient
+from services.conversation_manager import ConversationManager
 from typing import Optional
-from src.legacy.prompt import DIMA_POLO_PROMPT
+from legacy.prompt import DIMA_POLO_PROMPT
 
 router = Router()
 gemini_client = GeminiClient()
 conversation_manager = ConversationManager()
+ERROR_MSG = "Статус розыгрыша.........загрузка......89%............ катастрофически высокий шанс розыгрыша от Дима более чем на 50к"
 
 @router.message(CommandStart())
 async def handle_start(message: Message) -> None:
@@ -38,4 +39,4 @@ async def generate_response(text: str) -> Optional[str]:
         last_answer = response.split("AI:")[-1].split("Дмитрий:")[-1]
         conversation_manager.save_interaction(text, last_answer)
         return last_answer
-    return "Nice try!" 
+    return ERROR_MSG

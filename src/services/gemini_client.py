@@ -1,6 +1,6 @@
 from typing import Dict, List, Optional
 import requests
-from src.config import get_settings
+from config import get_settings
 import logging
 
 class GeminiClient:
@@ -26,4 +26,5 @@ class GeminiClient:
             
         except Exception as e:
             logging.error(f"Gemini API error: {str(e)}")
+            logging.error(f"Response: {response.json()}")
             return None 

@@ -14,7 +14,6 @@ from aiogram.enums.chat_type import ChatType
 
 # Bot token can be obtained via https://t.me/BotFather
 BOT_TOKEN = "7616826614:AAGrOUsFDMJUU39pl9Lv79pclJlZ_1cV5-4"
-
 # All handlers should be attached to the Router (or Dispatcher)
 dp = Dispatcher()
 

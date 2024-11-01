@@ -1,15 +1,14 @@
-from pydantic_settings import BaseSettings
-from functools import lru_cache
+from dotenv import load_dotenv
+import os
 
-class Settings(BaseSettings):
-    TELEGRAM_TOKEN: str 
-    GEMINI_API_KEY: str
-    GEMINI_URL: str = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent"
-    DEBUG: bool = False
+load_dotenv()
 
-    class Config:
-        env_file = ".env"
+class Settings:
+    def __init__(self):
+        self.TELEGRAM_TOKEN = os.getenv('TELEGRAM_TOKEN')
+        self.GEMINI_API_KEY = os.getenv('GEMINI_API_KEY')
+        self.GEMINI_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent"
+        self.DEBUG = False
 
-@lru_cache()
 def get_settings() -> Settings:
     return Settings() 
