@@ -19,7 +19,8 @@ class ConversationManager:
 
     def format_conversation(self, system_prompt: str, question: str, full_name: str) -> tuple[list[dict], str]:
         history = self.get_conversation_history()[-self.TRUNCATE_HISTORY_LENGTH :]
-        formatted_input = f"({full_name}): {question}"
+        # formatted_input = f"({full_name}): {question}"
+        formatted_input = f"{question}"
         convo_with_question = f"{history}\n{formatted_input}"
         conversation = [
             {"role": "user", "parts": [{"text": system_prompt}]},
