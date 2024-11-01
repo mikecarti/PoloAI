@@ -2,7 +2,7 @@ from aiogram import Router, F
 from aiogram.types import Message
 from aiogram.filters import CommandStart
 from aiogram.enums.chat_type import ChatType
-from random import randrange
+from random import randint
 from services.gemini_client import GeminiClient
 from services.conversation_manager import ConversationManager
 from typing import Optional
@@ -11,8 +11,9 @@ from legacy.prompt import DIMA_POLO_PROMPT
 router = Router()
 gemini_client = GeminiClient()
 conversation_manager = ConversationManager()
-ERROR_MSG = "Статус розыгрыша.........загрузка......89%............ катастрофически высокий шанс розыгрыша от Дима более чем на 50к"
-RESPONSE_PROBABILITY = 0.3
+# ERROR_MSG = "Статус розыгрыша.........загрузка......89%............ катастрофически высокий шанс розыгрыша от Дима более чем на 50к"
+ERROR_MSG = "Дима сейчас срет наберите позже. Бабки в обороте. Накрутка имеет 🤏🤏🤏."
+RESPONSE_PROBABILITY = 0.3  
 
 
 @router.message(CommandStart())
@@ -27,7 +28,7 @@ async def handle_message(message: Message) -> None:
         conversation_manager.save_interaction(message.text, "")
         return
 
-    answer = await generate_response(message.text)
+    answer = await generate_response(message)
     if answer:
         await message.answer(text=answer)
 
@@ -39,18 +40,18 @@ def should_process_message(message: Message) -> bool:
         return True
     return (
         message.chat.type in [ChatType.SUPERGROUP, ChatType.GROUP]
-        and randrange(0, 1, 0.1) <= RESPONSE_PROBABILITY
+        and randint(0, 10) <= RESPONSE_PROBABILITY * 10
     )
 
 
-async def generate_response(text: str) -> Optional[str]:
-    conversation = conversation_manager.format_conversation(DIMA_POLO_PROMPT, text)
+async def generate_response(message: Message) -> Optional[str]:
+    conversation = conversation_manager.format_conversation(DIMA_POLO_PROMPT, message.text, message.from_user.full_name)
 
     print(f"\nSending conversation to Gemini: \n{conversation}")
     response = await gemini_client.generate_response(conversation)
 
     if response:
         last_answer = response.split("AI:")[-1].split("Дмитрий:")[-1]
-        conversation_manager.save_interaction(text, last_answer)
+        conversation_manager.save_interaction(message.text, last_answer)
         return last_answer
     return ERROR_MSG

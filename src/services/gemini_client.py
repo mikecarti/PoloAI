@@ -47,14 +47,26 @@ class GeminiClient:
             response.raise_for_status()
             
             content = response.json()["candidates"][0].get("content")
+
+            if response.status_code != 200:
+                logging.error(f"Gemini API error: {response.status_code}")
+                logging.error(f"Response: {response.text}")
+                return None
+        
             if not content:
                 return None
                 
             return content["parts"][0]["text"]
             
+            
         except Exception as e:
             logging.error(f"Gemini API error: {str(e)}")
-            logging.error(f"Response: {response.text}")
+            
+            try:
+                logging.error(f"Response: {response.text}")
+            except:
+                pass
+
             return None
             
     # def _format_conversation(self, conversation: List[Dict]) -> List[Dict]:

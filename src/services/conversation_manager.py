@@ -17,9 +17,9 @@ class ConversationManager:
             inputs={"user": question}, outputs={"DimaPolo": answer}
         )
 
-    def format_conversation(self, system_prompt: str, question: str) -> list:
+    def format_conversation(self, system_prompt: str, question: str, full_name: str) -> list:
         history = self.get_conversation_history()[-self.TRUNCATE_HISTORY_LENGTH :]
-        convo_with_question = f"{history}\nHuman: {question}"
+        convo_with_question = f"{history}\nHuman ({full_name}): {question}"
 
         return [
             {"role": "user", "parts": [{"text": system_prompt}]},
