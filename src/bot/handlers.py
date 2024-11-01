@@ -19,12 +19,15 @@ async def handle_start(message: Message) -> None:
 
 @router.message()
 async def handle_message(message: Message) -> None:
+    print(f"\n[{message.from_user.username}] Message received: {message.text}")
     if not should_process_message(message):
         return
 
     answer = await generate_response(message.text)
     if answer:
         await message.answer(text=answer)
+
+    print(f"\n[{message.from_user.username}] Answer generated: {answer}")
 
 def should_process_message(message: Message) -> bool:
     if message.chat.type == ChatType.PRIVATE:
@@ -33,6 +36,8 @@ def should_process_message(message: Message) -> bool:
 
 async def generate_response(text: str) -> Optional[str]:
     conversation = conversation_manager.format_conversation(DIMA_POLO_PROMPT, text)
+    
+    print(f"\nSending conversation to Gemini: \n{conversation}")
     response = await gemini_client.generate_response(conversation)
     
     if response:

@@ -1,32 +1,62 @@
-from typing import Dict, List, Optional
-import google.generativeai as genai
+import requests
 import os
 import logging
+from typing import Dict, List, Optional
 
 class GeminiClient:
-    def __init__(self):
-        # Configure the API with your key
-        genai.configure(api_key=os.environ["GEMINI_API_KEY"])
-        # Initialize the model
-        self.model = genai.GenerativeModel("gemini-1.5-flash")
-
+    def __init__(
+        self,
+        temperature: float = 0.9,
+        top_k: int = 40,
+        top_p: float = 0.95,
+        max_output_tokens: int = 2048,
+        model: str = "gemini-1.5-flash-002"
+    ):
+        self.api_key = os.environ["GEMINI_API_KEY"]
+        self.base_url = "https://generativelanguage.googleapis.com/v1beta/models"
+        self.model = model
+        self.headers = {'Content-Type': 'application/json'}
+        
+        # Generation config
+        self.generation_config = {
+            "temperature": temperature,
+            "topK": top_k,
+            "topP": top_p,
+            "maxOutputTokens": max_output_tokens,
+        }
+        
+        # Safety settings
+        self.safety_settings = [
+            {"category": "HARM_CATEGORY_HARASSMENT", "threshold": "BLOCK_NONE"},
+            {"category": "HARM_CATEGORY_HATE_SPEECH", "threshold": "BLOCK_NONE"},
+            {"category": "HARM_CATEGORY_SEXUALLY_EXPLICIT", "threshold": "BLOCK_NONE"},
+            {"category": "HARM_CATEGORY_DANGEROUS_CONTENT", "threshold": "BLOCK_NONE"},
+        ]
+        
     async def generate_response(self, conversation: List[Dict]) -> Optional[str]:
         try:
-            # Convert conversation format if needed
-            prompt = self._format_conversation(conversation)
+            url = f"{self.base_url}/{self.model}:generateContent?key={self.api_key}"
             
-            # Generate content using the model
-            response = self.model.generate_content(prompt)
+            data = {
+                "contents": conversation,
+                "safetySettings": self.safety_settings,
+                "generationConfig": self.generation_config
+            }
             
-            return response.text
+            response = requests.post(url, headers=self.headers, json=data)
+            response.raise_for_status()
+            
+            content = response.json()["candidates"][0].get("content")
+            if not content:
+                return None
+                
+            return content["parts"][0]["text"]
             
         except Exception as e:
             logging.error(f"Gemini API error: {str(e)}")
+            logging.error(f"Response: {response.text}")
             return None
             
-    def _format_conversation(self, conversation: List[Dict]) -> str:
-        """Convert conversation format to a string prompt if needed"""
-        # If the conversation is already in the correct format, return the last message
-        if len(conversation) > 0:
-            return conversation[-1].get("parts", [{}])[0].get("text", "")
-        return ""
+    # def _format_conversation(self, conversation: List[Dict]) -> List[Dict]:
+    #     """No formatting needed as we're using the raw API format"""
+    #     return conversation
