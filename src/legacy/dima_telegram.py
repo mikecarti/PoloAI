@@ -13,7 +13,7 @@ from random import randint
 from aiogram.enums.chat_type import ChatType
 
 # Bot token can be obtained via https://t.me/BotFather
-TOKEN = "7616826614:AAGrOUsFDMJUU39pl9Lv79pclJlZ_1cV5-4"
+BOT_TOKEN = "7616826614:AAGrOUsFDMJUU39pl9Lv79pclJlZ_1cV5-4"
 
 # All handlers should be attached to the Router (or Dispatcher)
 dp = Dispatcher()
@@ -56,7 +56,7 @@ async def generate_answer(message):
 
 async def main() -> None:
     # Initialize Bot instance with default bot properties which will be passed to all API calls
-    bot = Bot(token=TOKEN, default=DefaultBotProperties(parse_mode=ParseMode.HTML))
+    bot = Bot(token=BOT_TOKEN, default=DefaultBotProperties(parse_mode=ParseMode.HTML))
 
     # And the run events dispatching
     await dp.start_polling(bot)
