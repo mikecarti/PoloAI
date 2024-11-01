@@ -48,14 +48,11 @@ class GeminiClient:
             
             content = response.json()["candidates"][0].get("content")
 
-            if response.status_code != 200:
+            if response.status_code != 200 or not content:
                 logging.error(f"Gemini API error: {response.status_code}")
                 logging.error(f"Response: {response.text}")
                 return None
         
-            if not content:
-                return None
-                
             return content["parts"][0]["text"]
             
             

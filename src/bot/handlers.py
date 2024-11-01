@@ -13,7 +13,7 @@ gemini_client = GeminiClient()
 conversation_manager = ConversationManager()
 # ERROR_MSG = "Статус розыгрыша.........загрузка......89%............ катастрофически высокий шанс розыгрыша от Дима более чем на 50к"
 ERROR_MSG = "Дима сейчас срет наберите позже. Бабки в обороте. Накрутка имеет 🤏🤏🤏."
-RESPONSE_PROBABILITY = 0.3  
+RESPONSE_PROBABILITY = 0.3
 
 
 @router.message(CommandStart())
@@ -45,13 +45,16 @@ def should_process_message(message: Message) -> bool:
 
 
 async def generate_response(message: Message) -> Optional[str]:
-    conversation = conversation_manager.format_conversation(DIMA_POLO_PROMPT, message.text, message.from_user.full_name)
+    conversation, formatted_input = conversation_manager.format_conversation(
+        DIMA_POLO_PROMPT, message.text, message.from_user.full_name
+    )
 
     print(f"\nSending conversation to Gemini: \n{conversation}")
     response = await gemini_client.generate_response(conversation)
 
     if response:
         last_answer = response.split("AI:")[-1].split("Дмитрий:")[-1]
-        conversation_manager.save_interaction(message.text, last_answer)
+        last_answer = last_answer.replace("  ", " ")
+        conversation_manager.save_interaction(formatted_input, last_answer)
         return last_answer
     return ERROR_MSG
