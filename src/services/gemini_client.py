@@ -6,9 +6,9 @@ from typing import Dict, List, Optional
 class GeminiClient:
     def __init__(
         self,
-        temperature: float = 0.9,
+        temperature: float = 1.6,
         top_k: int = 40,
-        top_p: float = 0.95,
+        top_p: float = 0.99,
         max_output_tokens: int = 2048,
         model: str = "gemini-1.5-flash-002"
     ):
