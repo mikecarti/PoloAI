@@ -1,7 +1,11 @@
-from aiogram import Router, F
+import asyncio
+from aiogram import Bot, Router, F
 from aiogram.types import Message
 from aiogram.filters import CommandStart
 from aiogram.enums.chat_type import ChatType
+from aiogram.enums.chat_action import ChatAction
+from aiogram.utils.chat_action import ChatActionSender
+from aiogram.methods.send_chat_action import SendChatAction
 from random import randint
 from services.gemini_client import GeminiClient
 from services.conversation_manager import ConversationManager
@@ -13,7 +17,7 @@ gemini_client = GeminiClient()
 conversation_manager = ConversationManager()
 # ERROR_MSG = "Статус розыгрыша.........загрузка......89%............ катастрофически высокий шанс розыгрыша от Дима более чем на 50к"
 ERROR_MSG = "Дима сейчас срет наберите позже. Бабки в обороте. Накрутка имеет 🤏🤏🤏."
-RESPONSE_PROBABILITY = 0.3
+RESPONSE_PROBABILITY = 0.45
 
 
 @router.message(CommandStart())
@@ -22,15 +26,17 @@ async def handle_start(message: Message) -> None:
 
 
 @router.message()
-async def handle_message(message: Message) -> None:
+async def handle_message(message: Message, bot: Bot) -> None:
     print(f"\n[{message.from_user.username}] Message received: {message.text}")
     if not should_process_message(message):
         conversation_manager.save_interaction(message.text, "")
         return
 
-    answer = await generate_response(message)
-    if answer:
-        await message.answer(text=answer)
+    async with ChatActionSender.typing(bot=bot, chat_id=message.chat.id):
+        await asyncio.sleep(1)
+        answer = await generate_response(message)
+        if answer:
+            await message.answer(text=answer)
 
     print(f"\n[{message.from_user.username}] Answer generated: {answer}")
 
